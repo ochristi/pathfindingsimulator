@@ -2,7 +2,7 @@ var Renderer = function() {
 	
 	var canvas,
 		ctx;
-	var model = Model(30, 20);
+	var model = Model(37, 37);
 	var tilesize = 15;
 	var clickHandler;
 		
@@ -109,4 +109,10 @@ window.addEventListener("DOMContentLoaded", function() {
 // 	r.model.setTile(3, 4);
 // 	r.model.setTile(4, 3);
 	r.draw();
+	
+	var mazeButton = document.getElementById("maze");
+	mazeButton.addEventListener("click", function() {
+		r.model.generateMaze();
+		r.draw();
+	});
 }, false);

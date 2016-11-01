@@ -6,6 +6,12 @@ var Model = function(w, h) {
 		end;
 	var path;
 	
+	function getRandomInt(min, max) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min)) + min;
+	}
+	
 	function init() {
 		playarea = new Array(h);
 		for (var y = 0; y < h; y++) {
@@ -17,6 +23,61 @@ var Model = function(w, h) {
 // 		console.log(playarea);
 	}
 	init();
+	
+	function generateMaze() {
+		var maze = new Array(h);
+		for (var y = 0; y < h; y++) {
+			maze[y] = new Array(w);
+			for (var x = 0; x < w; x++) {
+				playarea[y][x] = true;
+				maze[y][x] = {pre: null, visited: false};
+			}
+		}
+		
+		// returns neighbors with 1 cell between for walls
+		function getWalledNeighbors(x, y) {
+			var nbr = [];
+			try {
+			if (x > 1 && playarea[y][x - 2])
+				nbr.push({x: x - 2, y: y});
+			if (y > 1 && playarea[y - 2][x])
+				nbr.push({x: x, y: y - 2});
+			if (x < w - 2 && playarea[y][x + 2])
+				nbr.push({x: x + 2, y: y});
+			if (y < h - 2 && playarea[y + 2][x])
+				nbr.push({x: x, y: y + 2});
+			} catch(e) {
+				console.log("error", x, y);
+			}
+			return nbr;
+		}
+		
+		var i = 0;
+		var maxSteps = (h-1)*(w-1)/2 - 1;
+		var nodeQueue = [{x: 1+2*getRandomInt(0, w/2), y: 1+2* getRandomInt(0, h/2)}];
+		
+		var current = nodeQueue.shift();
+		playarea[current.y][current.x] = false;
+		
+		while (i < maxSteps /*|| nodeQueue.length > 0*/) {
+			i++;
+			var nbr = getWalledNeighbors(current.x, current.y);
+			
+			if (nbr.length > 0) {
+				var pick = nbr[getRandomInt(0, nbr.length)];
+				nodeQueue.push(pick);
+				playarea[(current.y + pick.y)/2][(current.x + pick.x)/2] = false;
+				playarea[pick.y][pick.x] = false;
+				current = pick;
+			} else {
+				if (nodeQueue.length > 0) {
+					current = nodeQueue.shift();
+				} else {
+					break;
+				}
+			}
+		}
+	}
 	
 	function getNeighbors(x, y) {
 		var nbr = [];
@@ -141,8 +202,7 @@ var Model = function(w, h) {
 			changeTile(x, y, false);
 		},
 		setStartEnd: setStartEnd,
-		astar: astar
+		astar: astar,
+		generateMaze: generateMaze
 	}
 };
-
-var m = Model(15, 15);
