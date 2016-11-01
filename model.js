@@ -25,12 +25,9 @@ var Model = function(w, h) {
 	init();
 	
 	function generateMaze() {
-		var maze = new Array(h);
 		for (var y = 0; y < h; y++) {
-			maze[y] = new Array(w);
 			for (var x = 0; x < w; x++) {
 				playarea[y][x] = true;
-				maze[y][x] = {pre: null, visited: false};
 			}
 		}
 		
