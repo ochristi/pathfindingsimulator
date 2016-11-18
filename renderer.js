@@ -2,7 +2,7 @@ var Renderer = function() {
 	
 	var canvas,
 		ctx;
-	var model = Model(37, 37);
+	var model = Model(19, 13);
 	var tilesize = 15;
 	var clickHandler;
 		
@@ -19,6 +19,14 @@ var Renderer = function() {
 		
 		canvas.addEventListener("click", clickHandler, false);
 		
+		document.getElementsByName("algo").forEach(function(el) {
+			el.addEventListener("click", function(e, target) {
+// 				console.log(e.target.value);
+				model.setAlgo(e.target.value);
+				draw();
+			}, false);
+		});
+		
 		return ctx;
 	};
 	
@@ -28,6 +36,8 @@ var Renderer = function() {
 //  		console.log(e);
 		if (e.ctrlKey) {
 			model.setStartEnd(x,y);
+		} else if (e.shiftKey) {
+			model.unsetTile(x,y);
 		} else {
 			model.setTile(x, y);
 		}
@@ -56,6 +66,19 @@ var Renderer = function() {
 		ctx.strokeStyle = previousStyle;
 	}
 	
+	function drawVisited() {
+		var previousStyle = ctx.fillStyle;
+		ctx.fillStyle = "#9cd6ff";
+		if (model.visited) {
+			model.visited.forEach(function(el) {
+
+				fillTile(el.x, el.y);
+			});
+		}
+		ctx.fillStyle = previousStyle;
+	}
+	
+	
 	function drawStartEnd() {
 		var previousStyle = ctx.fillStyle;
 		if (model.start) {
@@ -83,6 +106,7 @@ var Renderer = function() {
 	function draw() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawGrid();
+		drawVisited();
 		drawStartEnd();
 		drawPath();
 		for (var y = 0; y < model.h; y++) {

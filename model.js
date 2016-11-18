@@ -4,7 +4,9 @@ var Model = function(w, h) {
 	var playarea;
 	var start,
 		end;
-	var path;
+	var path,
+		visited;
+	var algo = function(){};
 	
 	function getRandomInt(min, max) {
 		min = Math.ceil(min);
@@ -21,6 +23,7 @@ var Model = function(w, h) {
 			}
 		}
 // 		console.log(playarea);
+		algo = astar;
 	}
 	init();
 	
@@ -78,9 +81,9 @@ var Model = function(w, h) {
 	
 	function getNeighbors(x, y) {
 		var nbr = [];
-		if (x > 1 && !playarea[y][x - 1])
+		if (x > 0 && !playarea[y][x - 1])
 			nbr.push({x: x - 1, y: y});
-		if (y > 1 && !playarea[y - 1][x])
+		if (y > 0 && !playarea[y - 1][x])
 			nbr.push({x: x, y: y - 1});
 		if (x < w - 1 && !playarea[y][x + 1])
 			nbr.push({x: x + 1, y: y});
@@ -99,14 +102,90 @@ var Model = function(w, h) {
 		return dx + dy;
 	}
 	
-	function astar() {
+	function dijkstra() {
+		console.log("dijkstra");
 		if (!(start && end)) return;
-		var visited = [];
+		visited = [];
+//  1  function Dijkstra(Graph, source):
+//  2
+//  3      create vertex set Q
+		var nodeQueue = [];
+//  4
+//  5      for each vertex v in Graph:             // Initialization
+//  6          dist[v] ← INFINITY                  // Unknown distance from source to v
+//  7          prev[v] ← UNDEFINED                 // Previous node in optimal path from source
+//  8          add v to Q                          // All nodes initially in Q (unvisited nodes)
+//  9
+// 10      dist[source] ← 0                        // Distance from source to source
+		for (var y = 0; y < h; y++) {
+			for (var x = 0; x < w; x++) {
+				if (!playarea[y][x]) {
+					if (x == start.x && y == start.y)
+						nodeQueue.push({x: x, y: y, d: 0, pre: undefined});
+					else
+						nodeQueue.push({x: x, y: y, d: Number.MAX_SAFE_INTEGER, pre: undefined});
+				}
+			}
+		}
+// 11      
+// 12      while Q is not empty:
+		while (nodeQueue.length > 0) {
+			var bestId = 0;
+// 			var bestD = Number.MAX_SAFE_INTEGER;
+// 13          u ← vertex in Q with min dist[u]    // Source node will be selected first
+// 14          remove u from Q 
+			var best = nodeQueue[0];
+			for (var i = 0; i < nodeQueue.length; i++) {
+				if (nodeQueue[i].d < best.d) {
+					best = nodeQueue[i];
+					bestId = i;
+				}
+			}
+			
+			best = nodeQueue.splice(bestId, 1)[0];
+			visited.push(best);
+			
+			if (best.x == end.x && best.y == end.y) {
+				path = [];
+// 				console.log("finished", best);
+				var pre = best.pre;
+				while (pre.x != start.x || pre.y != start.y) {
+					path.push(pre);
+// 					console.log("step", pre);
+					pre = pre.pre;
+				}
+				return;
+			}
+// 15          
+// 16          for each neighbor v of u:           // where v is still in Q.
+// 17              alt ← dist[u] + length(u, v)
+// 18              if alt < dist[v]:               // A shorter path to v has been found
+// 19                  dist[v] ← alt 
+// 20                  prev[v] ← u 
+// 21
+			var nbr = getNeighbors(best.x, best.y);
+			nbr.forEach(function(n) {
+				var nInQ = nodeQueue.find(pointInArr, n);
+				if (!nInQ) return;
+				if (best.d + 1 < nInQ.d) {
+					nInQ.d = best.d + 1;
+					nInQ.pre = best;
+				}
+			});
+		}
+// 22      return dist[], prev[]
+	}
+	
+	function astar() {
+		console.log("astar");
+		if (!(start && end)) return;
+		// node: d=curent distance, e=expected (current cost + heuristic)
+		visited = [];
 		var nodeQueue = [start]; // sorted list by current cost
+		start.d = 0;
 		
 		while (nodeQueue.length > 0) {
 			var current = nodeQueue.shift();
-			
 			// reached goal
 			if (current.x == end.x && current.y == end.y) {
 				// TODO mark path
@@ -137,6 +216,7 @@ var Model = function(w, h) {
 				if (!nInQ) {
 					nodeQueue.push(n);
 					nInQ = n;
+					nInQ.d = pathDst;
 				} else if (pathDst < nInQ.d) {
 				} else {
 					update = false;
@@ -144,11 +224,14 @@ var Model = function(w, h) {
 				if (update) {
 					nInQ.pre = current;
 					nInQ.d = pathDst;
-					nInQ.e = nInQ.d + heuristic(nInQ, end);
+					var h = heuristic(nInQ, end);
+					nInQ.e = nInQ.d + h;
 				}
 			});
+			nodeQueue.sort(function(a, b) {
+				return a.e - b.e;
+			});
 		}
-		
 	}
 	
 	function setStartEnd(x, y) {
@@ -161,12 +244,12 @@ var Model = function(w, h) {
 				path = [];
 			} else {
 				end = {x: x, y: y};
-				astar();
+				algo();
 			}
 		} else {
 			start = {x: x, y: y};
 		}
-		console.log(start, end);
+// 		console.log(start, end);
 	}
 	
 	function inRange(v, l, u) {
@@ -190,16 +273,34 @@ var Model = function(w, h) {
 		get path() {
 			return path;
 		},
+		get visited() {
+			return visited;
+		},
 		playarea: playarea,
 		setTile: function(x, y) {
 			changeTile(x, y, true);
-			if (start && end) astar();
+			if (start && end) algo();
 		},
 		unsetTile: function(x, y) {
 			changeTile(x, y, false);
+			if (start && end) algo();
 		},
 		setStartEnd: setStartEnd,
 		astar: astar,
+		dijkstra: dijkstra,
+		setAlgo: function(algoStr) {
+			console.log("switching to", algoStr);
+			switch(algoStr) {
+				case "astar":
+					algo = astar;
+					break;
+				case "dijkstra":
+					algo = dijkstra;
+					break;
+				default:
+			}
+			algo();
+		},
 		generateMaze: generateMaze
 	}
 };
