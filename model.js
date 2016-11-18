@@ -107,6 +107,7 @@ var Model = function(w, h) {
 		visited = [];
 		
 		var nodeQueue = [];
+		// add all nodes to queue and set distance to infinite, except for start
 		for (var y = 0; y < h; y++) {
 			for (var x = 0; x < w; x++) {
 				if (!playarea[y][x]) {
@@ -119,6 +120,8 @@ var Model = function(w, h) {
 		}
 		
 		while (nodeQueue.length > 0) {
+			
+			// find node with lowest distance for start
 			var bestId = 0;
 
 			var best = nodeQueue[0];
@@ -130,6 +133,7 @@ var Model = function(w, h) {
 			}
 			
 			best = nodeQueue.splice(bestId, 1)[0];
+			
 			// abort if no other nodes were reached
 			if (best.d == Number.MAX_SAFE_INTEGER) {
 				path = [];
@@ -137,6 +141,7 @@ var Model = function(w, h) {
 			}
 			visited.push(best);
 			
+			// abort if we arrived at the end
 			if (best.x == end.x && best.y == end.y) {
 				path = [];
 				var pre = best.pre;
@@ -146,8 +151,11 @@ var Model = function(w, h) {
 				}
 				return;
 			}
+			
+			// get neighbors for current node
 			var nbr = getNeighbors(best.x, best.y);
 			nbr.forEach(function(n) {
+				// if neighbors is still in queue update distance
 				var nInQ = nodeQueue.find(pointInArr, n);
 				if (!nInQ) return;
 				if (best.d + 1 < nInQ.d) {
