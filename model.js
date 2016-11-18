@@ -27,12 +27,16 @@ var Model = function(w, h) {
 	}
 	init();
 	
-	function generateMaze() {
+	function clearPlayarea() {
 		for (var y = 0; y < h; y++) {
 			for (var x = 0; x < w; x++) {
 				playarea[y][x] = true;
 			}
 		}
+	}
+	
+	function generateMaze() {
+		clearPlayarea();
 		
 		// returns neighbors with 1 cell between for walls
 		function getWalledNeighbors(x, y) {
