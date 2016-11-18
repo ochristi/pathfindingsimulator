@@ -105,17 +105,8 @@ var Model = function(w, h) {
 	function dijkstra() {
 		if (!(start && end)) return;
 		visited = [];
-//  1  function Dijkstra(Graph, source):
-//  2
-//  3      create vertex set Q
+		
 		var nodeQueue = [];
-//  4
-//  5      for each vertex v in Graph:             // Initialization
-//  6          dist[v] ← INFINITY                  // Unknown distance from source to v
-//  7          prev[v] ← UNDEFINED                 // Previous node in optimal path from source
-//  8          add v to Q                          // All nodes initially in Q (unvisited nodes)
-//  9
-// 10      dist[source] ← 0                        // Distance from source to source
 		for (var y = 0; y < h; y++) {
 			for (var x = 0; x < w; x++) {
 				if (!playarea[y][x]) {
@@ -126,13 +117,10 @@ var Model = function(w, h) {
 				}
 			}
 		}
-// 11      
-// 12      while Q is not empty:
+		
 		while (nodeQueue.length > 0) {
 			var bestId = 0;
-// 			var bestD = Number.MAX_SAFE_INTEGER;
-// 13          u ← vertex in Q with min dist[u]    // Source node will be selected first
-// 14          remove u from Q 
+
 			var best = nodeQueue[0];
 			for (var i = 0; i < nodeQueue.length; i++) {
 				if (nodeQueue[i].d < best.d) {
@@ -151,22 +139,13 @@ var Model = function(w, h) {
 			
 			if (best.x == end.x && best.y == end.y) {
 				path = [];
-// 				console.log("finished", best);
 				var pre = best.pre;
 				while (pre.x != start.x || pre.y != start.y) {
 					path.push(pre);
-// 					console.log("step", pre);
 					pre = pre.pre;
 				}
 				return;
 			}
-// 15          
-// 16          for each neighbor v of u:           // where v is still in Q.
-// 17              alt ← dist[u] + length(u, v)
-// 18              if alt < dist[v]:               // A shorter path to v has been found
-// 19                  dist[v] ← alt 
-// 20                  prev[v] ← u 
-// 21
 			var nbr = getNeighbors(best.x, best.y);
 			nbr.forEach(function(n) {
 				var nInQ = nodeQueue.find(pointInArr, n);
@@ -177,7 +156,6 @@ var Model = function(w, h) {
 				}
 			});
 		}
-// 22      return dist[], prev[]
 	}
 	
 	function astar() {
