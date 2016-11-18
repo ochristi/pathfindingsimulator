@@ -19,14 +19,6 @@ var Renderer = function() {
 		
 		canvas.addEventListener("click", clickHandler, false);
 		
-		for (var el of document.getElementsByName("algo")) {
-			el.addEventListener("click", function(e, target) {
-// 				console.log(e.target.value);
-				model.setAlgo(e.target.value);
-				draw();
-			}, false);
-		};
-		
 		return ctx;
 	};
 	
@@ -134,9 +126,23 @@ window.addEventListener("DOMContentLoaded", function() {
 // 	r.model.setTile(4, 3);
 	r.draw();
 	
+	
+	for (var el of document.getElementsByName("algo")) {
+		el.addEventListener("click", function(e, target) {
+			r.model.setAlgo(e.target.value);
+			r.draw();
+		}, false);
+	};
+	
 	var mazeButton = document.getElementById("maze");
 	mazeButton.addEventListener("click", function() {
 		r.model.generateMaze();
+		r.draw();
+	});
+	
+	var dungeonButton = document.getElementById("dungeon");
+	dungeonButton.addEventListener("click", function() {
+		r.model.generateDungeon();
 		r.draw();
 	});
 }, false);

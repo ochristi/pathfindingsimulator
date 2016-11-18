@@ -8,13 +8,20 @@
         #simulationarea {
             border: 1px solid grey;
         }
+
     </style>
   </head>
   <body>
-    <input type="radio" name="algo" id="astarRadio" value="astar" checked>
-        <label for="astarRadio">A*</label><br>
-    <input type="radio" name="algo" id="dijkstraRadio" value="dijkstra">
-        <label for="dijkstraRadio">Dijkstra</label><br>
-    <input id="maze" type="button" name="maze" value="Generate Maze"><br>
+    <div style="float: left;">
+        <input type="radio" name="algo" id="astarRadio" value="astar" checked>
+            <label for="astarRadio">A*</label><br>
+        <input type="radio" name="algo" id="dijkstraRadio" value="dijkstra">
+            <label for="dijkstraRadio">Dijkstra</label><br>
+    </div>
+    <div style="float: left;">
+        <input id="maze" type="button" name="maze" value="Generate Maze"><br>
+        <input id="dungeon" type="button" name="dungeon" value="Generate Dungeon"><br>
+    </div>
+    <div style="clear:both;"></div>
   </body>
 </html>
