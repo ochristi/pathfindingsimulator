@@ -14,6 +14,21 @@ var Model = function(w, h) {
 		return Math.floor(Math.random() * (max - min)) + min;
 	}
 	
+	// ala Knuth
+	function poisson(lambda) {
+
+		var L = Math.exp(-lambda),
+			k = 0,
+			p = 1;
+
+		while (p > L) {
+			k++;
+			p *= Math.random();
+		}
+
+		return k;
+	}
+	
 	function init() {
 		playarea = new Array(h);
 		for (var y = 0; y < h; y++) {
@@ -98,7 +113,7 @@ var Model = function(w, h) {
 	}
 	
 	function generateDungeon() {
-		const MAX_OBJ = 15;
+		const MAX_OBJ = 30;
 		var attempts = 0;
 		var objcount = 0;
 		setPlayarea(true);
@@ -147,36 +162,55 @@ var Model = function(w, h) {
 		makeRoom(center.x-3, center.y-2, center.x+3, center.y+3);
 // 		makeRoom(center.x-3, center.y-2, center.x+3, center.y+3);
 		
-		while (objcount < MAX_OBJ && attempts < 100) {
+		while (objcount < MAX_OBJ && attempts < 200) {
 			var wall = findWall();
-// 			console.log(wall);
+			var room = false;
+			
 			if (Math.random() < 0.75) {
-				var room = false;
+				// regular room
 				var roomsize = {
-					x1: getRandomInt(2, 4),
-					x2: getRandomInt(2, 4),
-					y1: getRandomInt(2, 4),
-					y2: getRandomInt(2, 4)
+					x1: poisson(2),
+					x2: poisson(2),
+					y1: poisson(2),
+					y2: poisson(2)
 				};
+			} else {
+				// corridor
 				if (wall.dx != 0) {
-					room = makeRoom(
-						wall.x+wall.dx,
-						wall.y-roomsize.y1,
-						wall.x+wall.dx*(roomsize.x1 + roomsize.x2),
-						wall.y+roomsize.y2
-					);
+					var roomsize = {
+						x1: 0,
+						x2: getRandomInt(3, 8), // corridor length
+						y1: 0,
+						y2: 0
+					};
 				} else if (wall.dy != 0) {
-					room = makeRoom(
-						wall.x-roomsize.x1,
-						wall.y+wall.dy,
-						wall.x+roomsize.x2,
-						wall.y+wall.dy*(roomsize.y1 + roomsize.y2)
-					);
+					var roomsize = {
+						x1: 0,
+						x2: 0,
+						y1: 0,
+						y2: getRandomInt(3, 8) // corridor length
+					};
 				}
-				if (room) changeTile(wall.x, wall.y, false);
 			}
+			if (wall.dx != 0) {
+				room = makeRoom(
+					wall.x+wall.dx,
+					wall.y-roomsize.y1,
+					wall.x+wall.dx*(roomsize.x1 + roomsize.x2),
+					wall.y+roomsize.y2
+				);
+			} else if (wall.dy != 0) {
+				room = makeRoom(
+					wall.x-roomsize.x1,
+					wall.y+wall.dy,
+					wall.x+roomsize.x2,
+					wall.y+wall.dy*(roomsize.y1 + roomsize.y2)
+				);
+			}
+			if (room) changeTile(wall.x, wall.y, false);
 			attempts++;
 		}
+		console.log("made " + objcount + " objects, with " + attempts + " attempts");
 	}
 	
 	function generateSimpleObstacles() {
