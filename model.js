@@ -103,7 +103,6 @@ var Model = function(w, h) {
 	}
 	
 	function dijkstra() {
-		console.log("dijkstra");
 		if (!(start && end)) return;
 		visited = [];
 //  1  function Dijkstra(Graph, source):
@@ -177,7 +176,6 @@ var Model = function(w, h) {
 	}
 	
 	function astar() {
-		console.log("astar");
 		if (!(start && end)) return;
 		// node: d=curent distance, e=expected (current cost + heuristic)
 		visited = [];
@@ -202,7 +200,6 @@ var Model = function(w, h) {
 			visited.push(current);
 			
 			var nbr = getNeighbors(current.x, current.y);
-// 			console.log(nbr);
 			
 			nbr.forEach(function(n) {
 // 				console.log(n);
@@ -261,6 +258,20 @@ var Model = function(w, h) {
 			playarea[y][x] = state;
 	};
 	
+	function setAlgo(algoStr) {
+// 		console.log("switching to", algoStr);
+		switch(algoStr) {
+			case "astar":
+				algo = astar;
+				break;
+			case "dijkstra":
+				algo = dijkstra;
+				break;
+			default:
+		}
+		algo();
+	};
+	
 	return {
 		w: w,
 		h: h,
@@ -288,19 +299,7 @@ var Model = function(w, h) {
 		setStartEnd: setStartEnd,
 		astar: astar,
 		dijkstra: dijkstra,
-		setAlgo: function(algoStr) {
-			console.log("switching to", algoStr);
-			switch(algoStr) {
-				case "astar":
-					algo = astar;
-					break;
-				case "dijkstra":
-					algo = dijkstra;
-					break;
-				default:
-			}
-			algo();
-		},
+		setAlgo: setAlgo,
 		generateMaze: generateMaze
 	}
 };

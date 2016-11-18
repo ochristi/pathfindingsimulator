@@ -2,7 +2,7 @@ var Renderer = function() {
 	
 	var canvas,
 		ctx;
-	var model = Model(19, 13);
+	var model = Model(23, 17);
 	var tilesize = 15;
 	var clickHandler;
 		
