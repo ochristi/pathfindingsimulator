@@ -19,13 +19,13 @@ var Renderer = function() {
 		
 		canvas.addEventListener("click", clickHandler, false);
 		
-		document.getElementsByName("algo").forEach(function(el) {
+		for (var el of document.getElementsByName("algo")) {
 			el.addEventListener("click", function(e, target) {
 // 				console.log(e.target.value);
 				model.setAlgo(e.target.value);
 				draw();
 			}, false);
-		});
+		};
 		
 		return ctx;
 	};
