@@ -26,17 +26,31 @@ var Model = function(w, h) {
 		algo = astar;
 	}
 	init();
+		
+	// borrowed from https://stackoverflow.com/a/39187274/6450889
+	function gaussianRand() {
+		var rand = 0;
+		const STEPS = 7;
+		for (var i = 0; i < STEPS; i += 1) {
+			rand += Math.random();
+		}
+
+		return rand / STEPS;
+	}
+	function gaussianRandom(start, end) {
+		return Math.floor(start + gaussianRand() * (end - start + 1));
+	}
 	
-	function clearPlayarea() {
+	function setPlayarea(fill) {
 		for (var y = 0; y < h; y++) {
 			for (var x = 0; x < w; x++) {
-				playarea[y][x] = true;
+				playarea[y][x] = fill;
 			}
 		}
 	}
 	
 	function generateMaze() {
-		clearPlayarea();
+		setPlayarea(true);
 		
 		// returns neighbors with 1 cell between for walls
 		function getWalledNeighbors(x, y) {
@@ -80,6 +94,102 @@ var Model = function(w, h) {
 					break;
 				}
 			}
+		}
+	}
+	
+	function generateDungeon() {
+		const MAX_OBJ = 15;
+		var attempts = 0;
+		var objcount = 0;
+		setPlayarea(true);
+		
+		var walls = [];
+		
+		function findWall() {
+			var searching = true;
+			while (searching) {
+				var wall = {x: Math.floor(Math.random() * w), y: Math.floor(Math.random() * h)};
+				var nbr = getNeighbors(wall.x, wall.y);
+				if (nbr.length == 1) {
+					var n = nbr[0];
+					wall.dx = wall.x - n.x;
+					wall.dy = wall.y - n.y;
+					return wall;
+				}
+			}
+		}
+		
+		function makeRoom(x1, y1, x2, y2) {
+			// scan if not blocked
+			for (var x = Math.min(x1, x2) - 1; x <= Math.max(x1, x2) + 1; x++) {
+				for (var y = Math.min(y1, y2) - 1; y <= Math.max(y1, y2) + 1; y++) {
+					if (!inRange(x, 0, w) || !inRange(y, 0, h)) {
+// 						console.log("room out of map");
+						return false;
+					}
+					if (!playarea[y][x]) {
+// 						console.log("blocked");
+						return false;
+					}
+				}
+			}
+			objcount++;
+			// carve
+			for (var x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
+				for (var y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
+					playarea[y][x] = false;
+				}
+			}
+			return true;
+		}
+		var center = {x: Math.floor(w/2), y: Math.floor(h/2)};
+		
+		makeRoom(center.x-3, center.y-2, center.x+3, center.y+3);
+// 		makeRoom(center.x-3, center.y-2, center.x+3, center.y+3);
+		
+		while (objcount < MAX_OBJ && attempts < 100) {
+			var wall = findWall();
+// 			console.log(wall);
+			if (Math.random() < 0.75) {
+				var room = false;
+				var roomsize = {
+					x1: getRandomInt(2, 4),
+					x2: getRandomInt(2, 4),
+					y1: getRandomInt(2, 4),
+					y2: getRandomInt(2, 4)
+				};
+				if (wall.dx != 0) {
+					room = makeRoom(
+						wall.x+wall.dx,
+						wall.y-roomsize.y1,
+						wall.x+wall.dx*(roomsize.x1 + roomsize.x2),
+						wall.y+roomsize.y2
+					);
+				} else if (wall.dy != 0) {
+					room = makeRoom(
+						wall.x-roomsize.x1,
+						wall.y+wall.dy,
+						wall.x+roomsize.x2,
+						wall.y+wall.dy*(roomsize.y1 + roomsize.y2)
+					);
+				}
+				if (room) changeTile(wall.x, wall.y, false);
+			}
+			attempts++;
+		}
+	}
+	
+	function generateSimpleObstacles() {
+		console.log("generateSimpleObstacles");
+		setPlayarea(false);
+		
+		const MAX_BLOBS = 5;
+		var centers = [];
+		for (var i = 0; i < MAX_BLOBS; i++) {
+// 			centers.push({de})
+			var point = {x: gaussianRandom(0, w), y: gaussianRandom(0, h)};
+			console.log(point);
+			changeTile(point.x, point.y, true);
 		}
 	}
 	
@@ -296,6 +406,8 @@ var Model = function(w, h) {
 		astar: astar,
 		dijkstra: dijkstra,
 		setAlgo: setAlgo,
-		generateMaze: generateMaze
+		generateMaze: generateMaze,
+		generateDungeon: generateDungeon,
+		generateSimple: generateSimpleObstacles
 	}
 };
