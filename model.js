@@ -142,6 +142,11 @@ var Model = function(w, h) {
 			}
 			
 			best = nodeQueue.splice(bestId, 1)[0];
+			// abort if no other nodes were reached
+			if (best.d == Number.MAX_SAFE_INTEGER) {
+				path = [];
+				return;
+			}
 			visited.push(best);
 			
 			if (best.x == end.x && best.y == end.y) {
@@ -229,6 +234,7 @@ var Model = function(w, h) {
 				return a.e - b.e;
 			});
 		}
+		path = [];
 	}
 	
 	function setStartEnd(x, y) {
