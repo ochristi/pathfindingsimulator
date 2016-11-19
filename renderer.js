@@ -91,7 +91,7 @@ var Renderer = function() {
 	}
 	
 	function drawPath() {
-		var length = 0;
+		var length = 1; // count of steps not path tiles
 		var previousStyle = ctx.fillStyle;
 		ctx.fillStyle = "#ffc164";
 		if (model.path) {
