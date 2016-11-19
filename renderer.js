@@ -116,6 +116,8 @@ var Renderer = function() {
 					fillTile(x, y);
 			}
 		}
+		document.getElementById("computationTime").value = model.computationTime ? model.computationTime.toFixed(3) + " ms" : "";
+		
 	};
 	
 	init();

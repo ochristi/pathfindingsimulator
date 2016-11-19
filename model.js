@@ -6,7 +6,15 @@ var Model = function(w, h) {
 		end;
 	var path,
 		visited;
+	var computationTime;
 	var algo = function(){};
+	
+	function runAlgo() {
+		var t0 = performance.now();
+		algo();
+		var t1 = performance.now();
+		computationTime = t1 - t0;
+	}
 	
 	function getRandomInt(min, max) {
 		min = Math.ceil(min);
@@ -14,7 +22,7 @@ var Model = function(w, h) {
 		return Math.floor(Math.random() * (max - min)) + min;
 	}
 	
-	function toString() {
+	function toJson() {
 		return JSON.stringify({
 			w: w,
 			h: h,
@@ -244,7 +252,7 @@ var Model = function(w, h) {
 			}
 		});
 		growObstracles();
-		algo();
+		runAlgo();
 	}
 	
 	function growObstracles() {
@@ -439,28 +447,25 @@ var Model = function(w, h) {
 				path = [];
 			} else {
 				end = {x: x, y: y};
-				algo();
+				runAlgo();
 			}
 		} else {
 			start = {x: x, y: y};
 		}
-// 		console.log(start, end);
 	}
 	
 	function setStart(x, y) {
 		if(playarea[y][x])
 			return;
 		start = {x: x, y: y};
-		algo();
-// 		console.log(start, end);
+		runAlgo();
 	}
 	
 	function setEnd(x, y) {
 		if(playarea[y][x])
 			return;
 		end = {x: x, y: y};
-		algo();
-// 		console.log(start, end);
+		runAlgo();
 	}
 	
 	function inRange(v, l, u) {
@@ -486,7 +491,7 @@ var Model = function(w, h) {
 				break;
 			default:
 		}
-		algo();
+		runAlgo();
 	};
 	
 	return {
@@ -504,14 +509,17 @@ var Model = function(w, h) {
 		get visited() {
 			return visited;
 		},
+		get computationTime() {
+			return computationTime;
+		},
 		playarea: playarea,
 		setTile: function(x, y) {
 			changeTile(x, y, true);
-			if (start && end) algo();
+			if (start && end) runAlgo();
 		},
 		unsetTile: function(x, y) {
 			changeTile(x, y, false);
-			if (start && end) algo();
+			if (start && end) runAlgo();
 		},
 		setStartEnd: setStartEnd,
 		setStart: setStart,
@@ -522,6 +530,7 @@ var Model = function(w, h) {
 		generateMaze: generateMaze,
 		generateDungeon: generateDungeon,
 		generateSimple: generateSimpleObstacles,
-		growObstracles: growObstracles
+		growObstracles: growObstracles,
+		toJson: toJson
 	}
 };
