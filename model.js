@@ -333,6 +333,8 @@ var Model = function(w, h) {
 		
 		while (nodeQueue.length > 0) {
 			var current = nodeQueue.shift();
+			visited.push(current);
+			
 			// reached goal
 			if (current.x == end.x && current.y == end.y) {
 				// TODO mark path
@@ -346,7 +348,6 @@ var Model = function(w, h) {
 				return;
 			}
 			
-			visited.push(current);
 			
 			var nbr = getNeighbors(current.x, current.y);
 			
