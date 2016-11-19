@@ -400,6 +400,22 @@ var Model = function(w, h) {
 // 		console.log(start, end);
 	}
 	
+	function setStart(x, y) {
+		if(playarea[y][x])
+			return;
+		start = {x: x, y: y};
+		algo();
+// 		console.log(start, end);
+	}
+	
+	function setEnd(x, y) {
+		if(playarea[y][x])
+			return;
+		end = {x: x, y: y};
+		algo();
+// 		console.log(start, end);
+	}
+	
 	function inRange(v, l, u) {
 		return v >= l && v < u;
 	}
@@ -448,6 +464,8 @@ var Model = function(w, h) {
 			if (start && end) algo();
 		},
 		setStartEnd: setStartEnd,
+		setStart: setStart,
+		setEnd: setEnd,
 		astar: astar,
 		dijkstra: dijkstra,
 		setAlgo: setAlgo,

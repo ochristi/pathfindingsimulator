@@ -27,7 +27,10 @@ var Renderer = function() {
 		var y = Math.floor(e.offsetY / (tilesize + 1));
 //  		console.log(e);
 		if (e.ctrlKey) {
-			model.setStartEnd(x,y);
+			if (e.altKey)
+				model.setEnd(x,y);
+			else
+			 model.setStart(x,y);
 		} else if (e.shiftKey) {
 			model.unsetTile(x,y);
 		} else {
