@@ -5,23 +5,53 @@
     <script src="model.js"></script>
     <script src="renderer.js"></script>
     <style>
+        body {
+            font-family: sans;
+        }
+        
+        h2 {
+            font-size: 1em;
+        }
+        
         #simulationarea {
+            margin-top: 1em;
             border: 1px solid grey;
+        }
+        
+        .menu {
+            height: 8em;
+            float: left;
+        }
+        .menu ~ .menu {
+            border-left: 1px solid grey;
+            margin-left: 1em;
+            padding-left: 1em;
         }
 
     </style>
   </head>
   <body>
-    <div style="float: left;">
+    <section>
+    <div class="menu">
+        <h2>Algo</h2>
         <input type="radio" name="algo" id="astarRadio" value="astar" checked>
             <label for="astarRadio">A*</label><br>
         <input type="radio" name="algo" id="dijkstraRadio" value="dijkstra">
             <label for="dijkstraRadio">Dijkstra</label><br>
     </div>
-    <div style="float: left;">
+    <div class="menu">
+        <h2>Generate</h2>
         <input id="maze" type="button" name="maze" value="Generate Maze"><br>
         <input id="dungeon" type="button" name="dungeon" value="Generate Dungeon"><br>
     </div>
+    <div class="menu">
+        <h2>Stats</h2>
+        <label for="length">Length</label>
+        <input id="length" type="text" value=""><br>
+        <label for="visited">Visited</label>
+        <input id="visited" type="text" value=""><br>
+    </div>
+    </section>
     <div style="clear:both;"></div>
   </body>
 </html>

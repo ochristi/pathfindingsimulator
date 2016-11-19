@@ -59,13 +59,16 @@ var Renderer = function() {
 	}
 	
 	function drawVisited() {
+		var visited = 0;
+		
 		var previousStyle = ctx.fillStyle;
 		ctx.fillStyle = "#9cd6ff";
 		if (model.visited) {
 			model.visited.forEach(function(el) {
-
+				visited++;
 				fillTile(el.x, el.y);
 			});
+			document.getElementById("visited").value = visited;
 		}
 		ctx.fillStyle = previousStyle;
 	}
@@ -85,12 +88,15 @@ var Renderer = function() {
 	}
 	
 	function drawPath() {
+		var length = 0;
 		var previousStyle = ctx.fillStyle;
 		ctx.fillStyle = "#ffc164";
 		if (model.path) {
 			model.path.forEach(function(el) {
+				length++;
 				fillTile(el.x, el.y);
 			});
+			document.getElementById("length").value = length;
 		}
 		ctx.fillStyle = previousStyle;
 	}
