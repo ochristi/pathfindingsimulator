@@ -154,4 +154,10 @@ window.addEventListener("DOMContentLoaded", function() {
 		r.model.generateDungeon();
 		r.draw();
 	});
+	
+	var simpleButton = document.getElementById("simple");
+	simpleButton.addEventListener("click", function() {
+		r.model.generateSimple();
+		r.draw();
+	});
 }, false);

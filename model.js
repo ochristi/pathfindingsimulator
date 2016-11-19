@@ -55,7 +55,7 @@ var Model = function(w, h) {
 	// borrowed from https://stackoverflow.com/a/39187274/6450889
 	function gaussianRand() {
 		var rand = 0;
-		const STEPS = 7;
+		const STEPS = 3;
 		for (var i = 0; i < STEPS; i += 1) {
 			rand += Math.random();
 		}
@@ -224,17 +224,26 @@ var Model = function(w, h) {
 	}
 	
 	function generateSimpleObstacles() {
-		console.log("generateSimpleObstacles");
 		setPlayarea(false);
 		
-		const MAX_BLOBS = 5;
+		const MAX_BLOBS = 4;
 		var centers = [];
 		for (var i = 0; i < MAX_BLOBS; i++) {
 // 			centers.push({de})
 			var point = {x: gaussianRandom(0, w), y: gaussianRandom(0, h)};
-			console.log(point);
+			centers.push(point);
 			changeTile(point.x, point.y, true);
 		}
+		centers.forEach(function(point) {
+			for (var p = 0; p < 50; p++) {
+				var extra = {
+					x: point.x + (poisson(1) - 1) * (Math.random() < 0.5 ? -1 : 1),
+					y: point.y + (poisson(1) - 1) * (Math.random() < 0.5 ? -1 : 1),
+				}
+				changeTile(extra.x, extra.y, true);
+			}
+		});
+		algo();
 	}
 	
 	function getNeighbors(x, y) {
@@ -339,7 +348,7 @@ var Model = function(w, h) {
 			if (current.x == end.x && current.y == end.y) {
 				// TODO mark path
 				path = [];
-				console.log("finished", current);
+// 				console.log("finished", current);
 				var pre = current.pre;
 				while (pre.x != start.x || pre.y != start.y) {
 					path.push(pre);
