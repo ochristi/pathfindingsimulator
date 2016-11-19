@@ -14,6 +14,16 @@ var Model = function(w, h) {
 		return Math.floor(Math.random() * (max - min)) + min;
 	}
 	
+	function toString() {
+		return JSON.stringify({
+			w: w,
+			h: h,
+			start: start,
+			end: end,
+			playarea: playarea
+		});
+	}
+	
 	// ala Knuth
 	function poisson(lambda) {
 
