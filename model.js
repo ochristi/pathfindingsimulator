@@ -348,7 +348,6 @@ var Model = function(w, h) {
 				return;
 			}
 			
-			
 			var nbr = getNeighbors(current.x, current.y);
 			
 			nbr.forEach(function(n) {
