@@ -226,7 +226,7 @@ var Model = function(w, h) {
 	function generateSimpleObstacles() {
 		setPlayarea(false);
 		
-		const MAX_BLOBS = 4;
+		const MAX_BLOBS = 5;
 		var centers = [];
 		for (var i = 0; i < MAX_BLOBS; i++) {
 // 			centers.push({de})
@@ -235,15 +235,47 @@ var Model = function(w, h) {
 			changeTile(point.x, point.y, true);
 		}
 		centers.forEach(function(point) {
-			for (var p = 0; p < 50; p++) {
+			for (var p = 0; p < 10; p++) {
 				var extra = {
-					x: point.x + (poisson(1) - 1) * (Math.random() < 0.5 ? -1 : 1),
-					y: point.y + (poisson(1) - 1) * (Math.random() < 0.5 ? -1 : 1),
+					x: point.x + Math.floor(.8 * poisson(1) - 1) * (Math.random() < 0.5 ? -1 : 1),
+					y: point.y + Math.floor(.8 * poisson(1) - 1) * (Math.random() < 0.5 ? -1 : 1),
 				}
 				changeTile(extra.x, extra.y, true);
 			}
 		});
+		growObstracles();
 		algo();
+	}
+	
+	function growObstracles() {
+		function getSourroundingWalls(x, y) {
+			// return list of adjacent walls for given point
+			var nbr = [];
+			for (var i = Math.max(0, x - 1); i <= Math.min(w - 1, x + 1); i++) {
+				for (var j = Math.max(0, y - 1); j <= Math.min(h - 1, y + 1); j++) {
+					if ((i != x || j != y) && playarea[j][i]) {
+						nbr.push({x: i, y: j});
+					}
+				}
+			}
+			return nbr;
+		}
+		// fill tile in condions
+		var tileQueue = [];
+		for (var y = 0; y < h; y++) {
+			for (var x = 0; x < w; x++) {
+				if (!playarea[y][x]) {
+					var walledNbr = getSourroundingWalls(x, y);
+					var count = walledNbr.length;
+					if (count > 1) {
+						tileQueue.push({x: x, y: y});
+					}
+				}
+			}
+		}
+		tileQueue.forEach(function(point) {
+			changeTile(point.x, point.y, true);
+		});
 	}
 	
 	function getNeighbors(x, y) {
@@ -479,6 +511,7 @@ var Model = function(w, h) {
 		setAlgo: setAlgo,
 		generateMaze: generateMaze,
 		generateDungeon: generateDungeon,
-		generateSimple: generateSimpleObstacles
+		generateSimple: generateSimpleObstacles,
+		growObstracles: growObstracles
 	}
 };
