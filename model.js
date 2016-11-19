@@ -257,7 +257,7 @@ var Model = function(w, h) {
 	function heuristic(from, to) {
 		var dx = Math.abs (to.x - from.x);
 		var dy = Math.abs (to.y - from.y);
-		return dx + dy;
+		return Math.sqrt(dx * dx + dy * dy);
 	}
 	
 	function dijkstra() {
