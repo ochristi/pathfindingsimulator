@@ -295,7 +295,7 @@ var Model = function(w, h) {
 		return el.x == this.x && el.y == this.y;
 	}
 	
-	function heuristic(from, to) {
+	function euclidean(from, to) {
 		var dx = Math.abs (to.x - from.x);
 		var dy = Math.abs (to.y - from.y);
 		return Math.sqrt(dx * dx + dy * dy);
@@ -365,7 +365,14 @@ var Model = function(w, h) {
 		}
 	}
 	
-	function astar() {
+	
+	function bfs() {
+		astar(function(from, to) {
+			return euclidean(from, to) * 100000;
+		});
+	}
+	
+	function astar(heuristic = euclidean) {
 		if (!(start && end)) return;
 		// node: d=curent distance, e=expected (current cost + heuristic)
 		visited = [];
@@ -473,6 +480,9 @@ var Model = function(w, h) {
 				break;
 			case "dijkstra":
 				algo = dijkstra;
+				break;
+			case "bfs":
+				algo = bfs;
 				break;
 			default:
 		}
