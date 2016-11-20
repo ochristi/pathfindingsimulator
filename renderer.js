@@ -31,8 +31,8 @@ var Renderer = function(options) {
 			document.getElementById("canvascontainer").appendChild(canvas);
 			canvas.addEventListener("click", clickHandler, false);
 		}
-		canvas.width = model.w * (tilesize + g) - 1;
-		canvas.height = model.h * (tilesize + g) - 1;
+		canvas.width = model.w * (tilesize + g) + 1;
+		canvas.height = model.h * (tilesize + g) + 1;
 		ctx = canvas.getContext("2d");
 		
 		ctx.fillStyle = "#0085c1";
@@ -59,25 +59,37 @@ var Renderer = function(options) {
 	};
 	
 	function fillTile(x, y) {
-		ctx.fillRect(x * (tilesize+g), y * (tilesize+g), tilesize, tilesize);
+		ctx.fillRect(x * (tilesize+g) + 1, y * (tilesize+g)+ 1, tilesize, tilesize);
 	};
 	
 	function drawGrid() {
 		if (!grid) return;
 		var previousStyle = ctx.strokeStyle;
+		// grid
 		ctx.strokeStyle = "lightgrey";
 		for (var y = 1; y < model.h; y++) {
 			ctx.beginPath();
-			ctx.moveTo(0, y * (tilesize+g) - 0.5);
-			ctx.lineTo(model.w * (tilesize + g), y * (tilesize+g) - 0.5);
+			ctx.moveTo(0, y * (tilesize+g) + 0.5);
+			ctx.lineTo(model.w * (tilesize + g), y * (tilesize+g) + 0.5);
 			ctx.stroke();
 		}
 		for (var x = 1; x < model.w; x++) {
 			ctx.beginPath();
-			ctx.moveTo(x * (tilesize+g) - 0.5, 0);
-			ctx.lineTo(x * (tilesize+g) - 0.5, model.h * (tilesize + g));
+			ctx.moveTo(x * (tilesize+g) + 0.5, 0);
+			ctx.lineTo(x * (tilesize+g) + 0.5, model.h * (tilesize + g));
 			ctx.stroke();
 		}
+		// border
+		ctx.strokeStyle = "grey";
+		ctx.beginPath();
+		ctx.moveTo(0.5, 0.5);
+		ctx.lineTo(0.5, model.h * (tilesize + g) + 0.5);
+		ctx.lineTo(model.w * (tilesize + g) + 0.5, model.h * (tilesize + g) + 0.5);
+		ctx.lineTo(model.w * (tilesize + g) + 0.5, 0.5);
+		ctx.lineTo(0.5, 0.5);
+// 		ctx.lineTo(model.h * (tilesize), model.w * (tilesize));
+// 		ctx.lineTo(x * (tilesize+g) + 0.5, model.h * (tilesize + g));
+		ctx.stroke();
 		ctx.strokeStyle = previousStyle;
 	}
 	
