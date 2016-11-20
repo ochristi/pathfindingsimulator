@@ -32,6 +32,14 @@ var Model = function(w, h) {
 		});
 	}
 	
+	function loadJson(modeldata) {
+		w = modeldata.w;
+		h = modeldata.h;
+		start = modeldata.start;
+		end = modeldata.end;
+		playarea = modeldata.playarea;
+	}
+	
 	// ala Knuth
 	function poisson(lambda) {
 
@@ -512,7 +520,9 @@ var Model = function(w, h) {
 		get computationTime() {
 			return computationTime;
 		},
-		playarea: playarea,
+		get playarea() {
+			return playarea;
+		},
 		setTile: function(x, y) {
 			changeTile(x, y, true);
 			if (start && end) runAlgo();
@@ -526,11 +536,13 @@ var Model = function(w, h) {
 		setEnd: setEnd,
 		astar: astar,
 		dijkstra: dijkstra,
+		bfs: bfs,
 		setAlgo: setAlgo,
 		generateMaze: generateMaze,
 		generateDungeon: generateDungeon,
 		generateSimple: generateSimpleObstacles,
 		growObstracles: growObstracles,
-		toJson: toJson
+		toJson: toJson,
+		loadJson: loadJson
 	}
 };
