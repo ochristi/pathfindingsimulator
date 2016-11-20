@@ -5,7 +5,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
 
     // save
-    $fn = "test.json";
+//     $fn = "test.json";
+    $fn = preg_replace("([^\w\s\d\.\-_~,;:\[\]\(\]]|[\.]{2,})", '', $_REQUEST["fn"]) . ".json";
     $f = fopen($modelsPath . $fn, "w");
     fwrite($f, json_encode($data));
     fclose($f);

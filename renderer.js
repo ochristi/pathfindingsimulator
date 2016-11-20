@@ -130,8 +130,6 @@ var Renderer = function(options) {
 		drawStartEnd();
 		drawPath();
 		
-		console.log(model.playarea);
-		
 		for (var y = 0; y < model.h; y++) {
 			for (var x = 0; x < model.w; x++) {
 				if(model.playarea[y][x]) {
@@ -146,7 +144,12 @@ var Renderer = function(options) {
 	init();
 	drawGrid();
 	return {
-		model: model,
+		get model() {
+			return model;
+		},
+		set model(m) {
+			model = m;
+		},
 		draw: draw
 	}
 };
@@ -187,8 +190,10 @@ window.addEventListener("DOMContentLoaded", function() {
 	saveButton.addEventListener("click", function() {
 		var serializedModel = r.model.toJson();
 		
+		var fn = document.getElementById("fn").value;
+		
 		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "model.php", true);
+		xhr.open("POST", "model.php?fn="+encodeURIComponent(fn), true);
 		xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
 		xhr.send(serializedModel);
@@ -208,6 +213,18 @@ window.addEventListener("DOMContentLoaded", function() {
 				var models = document.createElement("div");
 				models.id = "models";
 				
+				function closeModels() {
+					document.body.removeChild(models);
+					document.getElementById("content").setAttribute("class", "");
+				}
+				
+				var close = document.createElement("div");
+				close.setAttribute("class", "close");
+				close.addEventListener("click", function() {
+					closeModels();
+				});
+				models.appendChild(close);
+				
 				this.response.forEach(function(modelname) {
 					var modelXhr = new XMLHttpRequest();
 					modelXhr.responseType = 'json';
@@ -215,28 +232,35 @@ window.addEventListener("DOMContentLoaded", function() {
 						if (this.readyState == 4 && this.status == 200) {
 							var model = document.createElement("div");
 							model.setAttribute("class", "model");
-							var name = document.createElement("div");
-							name.innerText = modelname;
 							
 							models.appendChild(model);
-							models.appendChild(name);
 							
-							var r = modelXhr.response;
+							var res = modelXhr.response;
 							
 							var tinyCanvas = document.createElement("canvas");
 							tinyCanvas.setAttribute("class", "framed");
 							var tinyRenderer = Renderer({
-								w: r.w, h: r.h,
+								w: res.w, h: res.h,
 								tilesize: 3,
 								canvas: tinyCanvas,
 								grid: false
 								
 							});
 							model.appendChild(tinyCanvas);
-							tinyRenderer.model.loadJson(r);
-							console.log(r);
+							
+							tinyRenderer.model.loadJson(res);
 							tinyRenderer.model.bfs();
 							tinyRenderer.draw();
+							
+							var name = document.createElement("div");
+							name.innerText = modelname;
+							model.appendChild(name);
+							
+							model.addEventListener("click", function() {
+								r.model = tinyRenderer.model;
+								r.draw();
+								closeModels();
+							});
 						}
 					};
 					modelXhr.open("GET", "models/" + modelname, true);
