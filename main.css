@@ -6,6 +6,10 @@ h2 {
 	font-size: 1em;
 }
 
+input[type="text"] {
+	width: 85px;
+}
+
 #content, #models {
 	position: absolute;
 }

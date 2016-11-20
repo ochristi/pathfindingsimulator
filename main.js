@@ -10,6 +10,9 @@ window.addEventListener("DOMContentLoaded", function() {
 	for (var el of document.getElementsByName("algo")) {
 		el.addEventListener("click", function(e, target) {
 			r.model.setAlgo(e.target.value);
+			r.writeDuration("tComp", r.model.computationTime);
+			r.writeDuration("tAvgComp"); // clear
+			document.getElementById("progr").innerText = "";
 			r.draw();
 		}, false);
 	};
@@ -30,6 +33,26 @@ window.addEventListener("DOMContentLoaded", function() {
 	simpleButton.addEventListener("click", function() {
 		r.model.generateSimple();
 		r.draw();
+	});
+	
+	var repeatButton = document.getElementById("repeat");
+	repeatButton.addEventListener("click", function() {
+		const REPS = 25;
+		var el = document.getElementById("progr");
+		el.innerText = "Running...";
+		
+		setTimeout(function() {
+			var total = 0;
+			for (var i = 0; i < REPS; i++) {
+				r.model.runAlgo();
+				total += r.model.computationTime;
+			}
+			el.innerText = "Completed.";
+			r.writeDuration("tComp", total);
+			r.writeDuration("tAvgComp", total / REPS);
+			
+			r.draw();
+		}, 1);
 	});
 	
 	var saveButton = document.getElementById("save");

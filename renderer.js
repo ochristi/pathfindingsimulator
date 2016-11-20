@@ -54,6 +54,7 @@ var Renderer = function(options) {
 		} else {
 			model.setTile(x, y);
 		}
+		writeDuration("tComp", model.computationTime);
 		draw();
 	};
 	
@@ -123,6 +124,10 @@ var Renderer = function(options) {
 		ctx.fillStyle = previousStyle;
 	}
 	
+	function writeDuration(id, value, decimals = 3, unit = "ms") {
+		document.getElementById(id).value = value ? value.toFixed(3) + " ms" : "";
+	}
+	
 	function draw() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawGrid();
@@ -137,7 +142,6 @@ var Renderer = function(options) {
 				}
 			}
 		}
-		document.getElementById("computationTime").value = model.computationTime ? model.computationTime.toFixed(3) + " ms" : "";
 		
 	};
 	
@@ -150,6 +154,7 @@ var Renderer = function(options) {
 		set model(m) {
 			model = m;
 		},
-		draw: draw
+		draw: draw,
+		writeDuration: writeDuration
 	}
 };

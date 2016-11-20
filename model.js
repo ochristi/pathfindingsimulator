@@ -538,6 +538,7 @@ var Model = function(w, h) {
 		dijkstra: dijkstra,
 		bfs: bfs,
 		setAlgo: setAlgo,
+		runAlgo: runAlgo,
 		generateMaze: generateMaze,
 		generateDungeon: generateDungeon,
 		generateSimple: generateSimpleObstacles,
